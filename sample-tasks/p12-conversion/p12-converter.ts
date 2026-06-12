@@ -13,7 +13,8 @@ const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, password);
 
 // Extract
 
+// Certificate + expiration
 const certificateBag = p12.getBags({ bagType: forge.pki.oids.certBag })[forge.pki.oids.certBag][0];
 const certificate = certificateBag.cert;
-
 console.log("Certificate Contents:", certificate);
+console.log(certificate.validity.notAfter);
