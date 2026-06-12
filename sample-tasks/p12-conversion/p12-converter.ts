@@ -12,5 +12,8 @@ const p12Asn1 = forge.asn1.fromDer(fileContentsString);
 const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, password);
 
 // Extract
-const certBags = p12.getBags({bagType: forge.pki.oids.certBag});
-console.log(certBags[forge.pki.oids.certBag][0]);
+
+const certificateBag = p12.getBags({ bagType: forge.pki.oids.certBag })[forge.pki.oids.certBag][0];
+const certificate = certificateBag.cert;
+
+console.log("Certificate Contents:", certificate);
