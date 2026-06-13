@@ -1,0 +1,9 @@
+After completing task 2 I realised I should document where I'm sourcing my information from. If neccessary I can delve through my browser history to find my sources for the p12 task. 
+
+Data structure task:
+https://www.geeksforgeeks.org/sql/sql-join-cartesian-join-self-join/
+https://dev.to/yugjadvani/advanced-integration-connecting-postgresql-with-nodejs-in-a-typescript-ecosystem-3nnh
+https://stackoverflow.com/questions/46249472/how-to-push-an-object-into-an-array-with-typescript
+https://stackoverflow.com/questions/208016/how-to-list-the-properties-of-a-javascript-object
+https://stackoverflow.com/questions/38875051/declare-an-array-in-typescript
+
