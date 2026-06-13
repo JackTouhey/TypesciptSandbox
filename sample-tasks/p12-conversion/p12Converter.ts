@@ -26,7 +26,7 @@ console.log('');
 console.log("Public Key", publicKey);
 
 // I nearly got the privateKey from purely node-forge docs which used bagType: forge.pki.oids.keyBag 
-// After going in circles trying to make that work I caved an used google, learning of bagType: forge.pki.oids.pkcs8ShroudedKeyBag
+// After going in circles trying to make that work I caved and used google, learning of bagType: forge.pki.oids.pkcs8ShroudedKeyBag
 const keyBags = p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag });
 const keyBag = keyBags[forge.pki.oids.pkcs8ShroudedKeyBag][0];
 const privateKey = keyBag.key;
