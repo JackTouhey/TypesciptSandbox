@@ -1,4 +1,5 @@
 import pool from '../utils/getConnectionPool.ts';
+import {inspect} from 'node:util';
 
 const sampleQuery: string = 'select owner.ownerid, owner.ownername, pet.petid, pet.petname, pet.ownerid from "owner" cross join pet where owner.ownerid = pet.ownerid';
 const primaryKeyName: string = 'ownerid';
@@ -13,16 +14,16 @@ async function runQuery(query: string): Promise<Record<string, unknown>[]> {
     }
 }
 
-function processData(resultSet: Record<string, unknown>[], primaryKeyName: string) {
-    console.log('Process Data called')
-    if (!resultSet.length) return;
+function processData(resultSet: Record<string, unknown>[], primaryKeyName: string): object[] {
+    if (!resultSet.length) return [];
 
     const keySet: string[] = extractKeys(resultSet[0] as Record<string, unknown>);
     const tableAKeys: string[] = extractTableAKeys(resultSet as Record<string, unknown>[], keySet, primaryKeyName);
     const tableBKeys: string[] = extractTableBKeys(keySet, tableAKeys);
 
     const constructedObjects: object[] = buildObjects(resultSet, tableAKeys, tableBKeys, primaryKeyName);
-    console.log(constructedObjects);
+    
+    return constructedObjects;
 }
 
 function extractKeys(resultSet: Record<string, unknown>): string[] {
@@ -39,6 +40,7 @@ function extractTableAKeys(resultSet: Record<string, unknown>[], keySet: string[
             const previousPrimaryValue = previousRow[primaryKeyName];
             const currentRowPrimaryValue = currentRow[primaryKeyName];
 
+            // Once 2 rows from tableA are found, extract all keys that have the same value between the two rows 
             if (previousPrimaryValue === currentRowPrimaryValue) {
                 for (const key of keySet) {
                     if (previousRow[key] === currentRow[key]) {
@@ -73,8 +75,8 @@ function buildObjects(resultSet: Record<string, unknown>[], tableAKeys: string[]
             if (currentRow === undefined) {
                 break;
             }
-            // Build TableA Object
 
+            // Build TableA Object
             let tableAObject: Record<string, unknown> = {};
             for (const key of tableAKeys) {
                 tableAObject[key] = currentRow[key];
@@ -93,9 +95,12 @@ function buildObjects(resultSet: Record<string, unknown>[], tableAKeys: string[]
                 // Check if next row is from same row of TableA and move on to this row if so
                 if (index + 1 < resultSet.length) {
                     const nextRow = resultSet[index + 1];
-                    if (nextRow !== undefined) {
+                    if (nextRow !== undefined && nextRow[primaryKey] === currentPrimaryValue) {
                         index++;
                         currentRow = nextRow;
+                    } else {
+                        // Exit while loop if next row not same row of TableA
+                        break;
                     }
                 } else {
                     // Exit while loop if no more rows
@@ -114,7 +119,8 @@ function buildObjects(resultSet: Record<string, unknown>[], tableAKeys: string[]
 }
 
 async function run() {
-    processData(await runQuery(sampleQuery), primaryKeyName);
+    const constructedObjects = processData(await runQuery(sampleQuery), primaryKeyName);
+    console.log(inspect(constructedObjects, false, null, true ))
 }
 
 run();

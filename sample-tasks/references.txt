@@ -19,3 +19,5 @@ https://stackoverflow.com/questions/43716263/how-to-check-undefined-in-typescrip
 https://www.typescripttutorial.net/typescript-tutorial/typescript-continue/
 https://www.typescripttutorial.net/typescript-tutorial/typescript-break/
 https://stackoverflow.com/questions/42790602/how-do-i-check-whether-an-array-contains-a-string-in-typescript
+https://stackoverflow.com/questions/10729276/how-can-i-get-the-full-object-in-node-jss-console-log-rather-than-object
+https://www.npmjs.com/package/util
