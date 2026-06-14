@@ -19,8 +19,10 @@ function processData(resultSet: Record<string, unknown>[], primaryKeyName: strin
 
     const keySet: string[] = extractKeys(resultSet[0] as Record<string, unknown>);
     const tableAKeys: string[] = extractTableAKeys(resultSet as Record<string, unknown>[], keySet, primaryKeyName);
+    const tableBKeys: string[] = extractTableBKeys(keySet, tableAKeys);
     console.log(keySet);
     console.log(tableAKeys);
+    console.log(tableBKeys);
 }
 
 function extractKeys(resultSet: Record<string, unknown>): string[] {
@@ -50,6 +52,16 @@ function extractTableAKeys(resultSet: Record<string, unknown>[], keySet: string[
         }
     }
     return tableAKeys;
+}
+
+function extractTableBKeys(keySet: string[], tableAKeys: string[]): string[] {
+    const tableBKeys: string[] = [];
+    for (const key of keySet) {
+        if (!tableAKeys.includes(key)) {
+            tableBKeys.push(key);
+        }
+    }
+    return tableBKeys;
 }
 
 async function run() {

@@ -18,3 +18,4 @@ https://stackoverflow.com/questions/62438346/how-to-dynamically-access-object-pr
 https://stackoverflow.com/questions/43716263/how-to-check-undefined-in-typescript
 https://www.typescripttutorial.net/typescript-tutorial/typescript-continue/
 https://www.typescripttutorial.net/typescript-tutorial/typescript-break/
+https://stackoverflow.com/questions/42790602/how-do-i-check-whether-an-array-contains-a-string-in-typescript
