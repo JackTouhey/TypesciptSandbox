@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "devDependencies": {
     "@types/node": "^25.9.3",
     "@types/pg": "^8.20.0",

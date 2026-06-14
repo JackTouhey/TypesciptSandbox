@@ -1,4 +1,4 @@
-import pool from '../utils/getConnectionPool';
+import pool from '../utils/getConnectionPool.ts';
 
 const sampleQuery: string = 'select owner.ownerid, owner.ownername, pet.petid, pet.petname, pet.ownerid from "owner" cross join pet where owner.ownerid = pet.ownerid';
 const primaryKeyName: string = 'ownerid';
@@ -6,7 +6,6 @@ const primaryKeyName: string = 'ownerid';
 async function runQuery(query: string): Promise<Record<string, unknown>[]> {
     try {
         const resultSet = await pool.query(query);
-        console.log(resultSet.rows[0]);
         return resultSet.rows;
     } catch (error) {
         console.error('Error executing query:', error);
@@ -15,14 +14,15 @@ async function runQuery(query: string): Promise<Record<string, unknown>[]> {
 }
 
 function processData(resultSet: Record<string, unknown>[], primaryKeyName: string) {
+    console.log('Process Data called')
     if (!resultSet.length) return;
 
     const keySet: string[] = extractKeys(resultSet[0] as Record<string, unknown>);
     const tableAKeys: string[] = extractTableAKeys(resultSet as Record<string, unknown>[], keySet, primaryKeyName);
     const tableBKeys: string[] = extractTableBKeys(keySet, tableAKeys);
-    console.log(keySet);
-    console.log(tableAKeys);
-    console.log(tableBKeys);
+
+    const constructedObjects: object[] = buildObjects(resultSet, tableAKeys, tableBKeys, primaryKeyName);
+    console.log(constructedObjects);
 }
 
 function extractKeys(resultSet: Record<string, unknown>): string[] {
@@ -64,8 +64,57 @@ function extractTableBKeys(keySet: string[], tableAKeys: string[]): string[] {
     return tableBKeys;
 }
 
+function buildObjects(resultSet: Record<string, unknown>[], tableAKeys: string[], tableBKeys: string[], primaryKey: string): object[] {
+    const tableAObjects: object[] = [];
+    try {
+        for (let index = 0; index < resultSet.length; index++) {
+            let currentRow = resultSet[index];
+
+            if (currentRow === undefined) {
+                break;
+            }
+            // Build TableA Object
+
+            let tableAObject: Record<string, unknown> = {};
+            for (const key of tableAKeys) {
+                tableAObject[key] = currentRow[key];
+            }
+
+            // Build TableBObjects
+            let currentPrimaryValue = currentRow[primaryKey];
+            const tableBObjects: object[] = [];
+            while (currentRow[primaryKey] === currentPrimaryValue) {
+                let currentBObject: Record<string, unknown> = {};
+                for (const key of tableBKeys) {
+                    currentBObject[key] = currentRow[key];
+                }
+                tableBObjects.push(currentBObject);
+
+                // Check if next row is from same row of TableA and move on to this row if so
+                if (index + 1 < resultSet.length) {
+                    const nextRow = resultSet[index + 1];
+                    if (nextRow !== undefined) {
+                        index++;
+                        currentRow = nextRow;
+                    }
+                } else {
+                    // Exit while loop if no more rows
+                    break;
+                }
+            }
+
+            tableAObject['tableBObjects'] = tableBObjects;
+            tableAObjects.push(tableAObject);
+        }
+    } catch (error) {
+        console.error('Error building objects:', error);
+        throw error;
+    }
+    return tableAObjects;
+}
+
 async function run() {
-    processData(await runQuery(sampleQuery), 'ownerid');
+    processData(await runQuery(sampleQuery), primaryKeyName);
 }
 
 run();
