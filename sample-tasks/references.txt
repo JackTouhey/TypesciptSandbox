@@ -21,3 +21,9 @@ https://www.typescripttutorial.net/typescript-tutorial/typescript-break/
 https://stackoverflow.com/questions/42790602/how-do-i-check-whether-an-array-contains-a-string-in-typescript
 https://stackoverflow.com/questions/10729276/how-can-i-get-the-full-object-in-node-jss-console-log-rather-than-object
 https://www.npmjs.com/package/util
+
+Creative problem sovling task:
+https://blog.tericcabrel.com/read-csv-node-typescript/
+https://www.npmjs.com/package/csv-parse
+https://stackoverflow.com/questions/42678891/typescript-character-type
+https://stackoverflow.com/questions/69704260/how-do-i-declare-and-define-my-variable-to-be-nullable
