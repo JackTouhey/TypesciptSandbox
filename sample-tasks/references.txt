@@ -6,4 +6,6 @@ https://dev.to/yugjadvani/advanced-integration-connecting-postgresql-with-nodejs
 https://stackoverflow.com/questions/46249472/how-to-push-an-object-into-an-array-with-typescript
 https://stackoverflow.com/questions/208016/how-to-list-the-properties-of-a-javascript-object
 https://stackoverflow.com/questions/38875051/declare-an-array-in-typescript
-
+https://stackoverflow.com/questions/24403732/how-to-check-if-array-is-empty-or-does-not-exist
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_operator
+https://stackoverflow.com/questions/57722093/no-overload-matches-this-call-type-string-is-not-assignable-to-type-signals
