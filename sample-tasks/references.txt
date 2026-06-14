@@ -1,4 +1,5 @@
 After completing task 2 I realised I should document where I'm sourcing my information from. If neccessary I can delve through my browser history to find my sources for the p12 task. 
+This may not be entirely comprehensive, as I picked up some small pieces of information whilst browsing but should contain the majority of sources.
 
 Data structure task:
 https://www.geeksforgeeks.org/sql/sql-join-cartesian-join-self-join/
@@ -9,3 +10,11 @@ https://stackoverflow.com/questions/38875051/declare-an-array-in-typescript
 https://stackoverflow.com/questions/24403732/how-to-check-if-array-is-empty-or-does-not-exist
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_operator
 https://stackoverflow.com/questions/57722093/no-overload-matches-this-call-type-string-is-not-assignable-to-type-signals
+https://www.typescriptlang.org/docs/handbook/iterators-and-generators.html#forof-vs-forin-statements
+https://stackoverflow.com/questions/46213989/iterate-over-array-of-objects-in-typescript
+https://www.reddit.com/r/typescript/comments/wfmn3j/whats_the_difference_between_k_string_unknown_and/
+https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type
+https://stackoverflow.com/questions/62438346/how-to-dynamically-access-object-property-in-typescript
+https://stackoverflow.com/questions/43716263/how-to-check-undefined-in-typescript
+https://www.typescripttutorial.net/typescript-tutorial/typescript-continue/
+https://www.typescripttutorial.net/typescript-tutorial/typescript-break/
