@@ -27,3 +27,7 @@ https://blog.tericcabrel.com/read-csv-node-typescript/
 https://www.npmjs.com/package/csv-parse
 https://stackoverflow.com/questions/42678891/typescript-character-type
 https://stackoverflow.com/questions/69704260/how-do-i-declare-and-define-my-variable-to-be-nullable
+https://stackoverflow.com/questions/3476255/in-javascript-how-can-i-tell-if-a-field-exists-inside-an-object
+https://stackoverflow.com/questions/45485073/how-do-i-express-a-date-type-in-typescript
+https://node-postgres.com/features/queries
+https://stackoverflow.com/questions/79940741/using-typescript-how-do-i-strongly-type-postgresql-query-results
