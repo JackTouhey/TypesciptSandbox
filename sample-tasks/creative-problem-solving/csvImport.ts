@@ -2,6 +2,7 @@ import { parse } from 'csv-parse/sync';
 import * as fs from 'fs';
 import pool from '../utils/getConnectionPool.ts';
 import type { QueryResult } from 'pg';
+import _ from 'lodash';
 
 type Patient = {
     firstName?: string,
@@ -42,9 +43,17 @@ async function run() {
 
 }
 
-function processPatient(currentPatient: Patient) {
+async function processPatient(currentPatient: Patient) {
     // Check if patient exists
-    
+    const retrievedPatient = await lookupPatient(currentPatient);
+    if (retrievedPatient !== undefined) {
+        // check if any difference
+        if (!_.isEqual(currentPatient, retrievedPatient)) {
+            // If not equal update
+        }
+    } else {
+        // No patient retrieved, insert whole patient
+    }
 }
 
 async function lookupPatient(currentPatient: Patient): Promise<Patient | undefined> {
@@ -57,7 +66,7 @@ async function medicareLookup(currentPatient: Patient): Promise<Patient | undefi
         try {
             const query = 'select first_name as firstname, last_name as lastname, dob as dateofbirth, gender, address, mobile, email, medicare, ihi from patients where medicare = $1';
             const value = [ currentPatient.medicare ]
-
+            _.
             // I was not able to 
             const resultSet: QueryResult<Record<string, unknown>> = await pool.query(query, value);
             const retrievedPatient = buildPatientFromRecord(resultSet.rows[0]);

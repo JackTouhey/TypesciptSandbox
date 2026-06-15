@@ -1,12 +1,14 @@
 {
   "type": "module",
   "devDependencies": {
+    "@types/lodash": "^4.17.24",
     "@types/node": "^25.9.3",
     "@types/pg": "^8.20.0",
     "typescript": "^6.0.3"
   },
   "dependencies": {
     "csv-parse": "^6.2.1",
+    "lodash": "^4.18.1",
     "node-forge": "^1.4.0",
     "pg": "^8.21.0",
     "util": "^0.12.5"

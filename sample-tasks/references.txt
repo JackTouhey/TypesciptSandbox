@@ -34,3 +34,4 @@ https://stackoverflow.com/questions/79940741/using-typescript-how-do-i-strongly-
 https://stackoverflow.com/questions/12789231/class-type-check-in-typescript
 https://www.typescriptlang.org/docs/handbook/2/typeof-types.html
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
+https://stackoverflow.com/questions/201183/how-can-i-determine-equality-for-two-javascript-objects
