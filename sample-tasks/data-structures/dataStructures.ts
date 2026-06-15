@@ -92,7 +92,7 @@ function buildObjects(resultSet: Record<string, unknown>[], tableAKeys: string[]
                 }
                 tableBObjects.push(currentBObject);
 
-                // Check if next row is from same row of TableA and move on to this row if so
+                // Check if next row is from same row of TableA and move on to that row if so
                 if (index + 1 < resultSet.length) {
                     const nextRow = resultSet[index + 1];
                     if (nextRow !== undefined && nextRow[primaryKey] === currentPrimaryValue) {

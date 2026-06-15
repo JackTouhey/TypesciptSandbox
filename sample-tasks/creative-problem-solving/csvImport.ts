@@ -33,12 +33,14 @@ async function run() {
     const patients = parseCsvToPatients();
 
     if (patients[0] !== undefined) {
-        await medicareLookup(patients[0]);
+        insertPatient(patients[0]);
+        // await medicareLookup(patients[0]);
     }
 
     for(const patient of patients) {
         // processPatient(patient);
         // Check if already in database
+        insertPatient(patient);
     }
 
 }
@@ -53,11 +55,12 @@ async function processPatient(currentPatient: Patient) {
         }
     } else {
         // No patient retrieved, insert whole patient
+
     }
 }
 
 async function lookupPatient(currentPatient: Patient): Promise<Patient | undefined> {
-    // Check which identifier to use
+    // Check which identifier to use, try medicare fallback to ihi
     return currentPatient.medicare !== undefined ? await medicareLookup(currentPatient) : await ihiLookup(currentPatient);
 }
 
@@ -66,8 +69,24 @@ async function medicareLookup(currentPatient: Patient): Promise<Patient | undefi
         try {
             const query = 'select first_name as firstname, last_name as lastname, dob as dateofbirth, gender, address, mobile, email, medicare, ihi from patients where medicare = $1';
             const value = [ currentPatient.medicare ]
-            _.
-            // I was not able to 
+            const resultSet: QueryResult<Record<string, unknown>> = await pool.query(query, value);
+            const retrievedPatient = buildPatientFromRecord(resultSet.rows[0]);
+            return retrievedPatient;
+        } catch (error) {
+            console.log('Error performing medicareLookup: ', error);
+            return undefined;
+        }
+    } else {
+        return undefined;
+    }
+}
+
+async function ihiLookup(currentPatient: Patient): Promise<Patient | undefined> {
+    if (currentPatient.medicare !== undefined) {
+        try {
+            const query = 'select first_name as firstName, last_name as lastName, dob as dateOfBirth, gender, address, mobile, email, medicare, ihi from patients where ihi = $1';
+            const value = [ currentPatient.ihi ]
+
             const resultSet: QueryResult<Record<string, unknown>> = await pool.query(query, value);
             const retrievedPatient = buildPatientFromRecord(resultSet.rows[0]);
             return retrievedPatient;
@@ -136,21 +155,64 @@ function buildPatientFromRecord(resultSet: Record<string, unknown> | undefined):
     }
 }
 
-async function ihiLookup(currentPatient: Patient): Promise<Patient | undefined> {
-    if (currentPatient.medicare !== undefined) {
-        try {
-            const query = 'select first_name as firstName, last_name as lastName, dob as dateOfBirth, gender, address, mobile, email, medicare, ihi from patients where ihi = $1';
-            const value = [ currentPatient.ihi ]
+async function insertPatient(currentPatient: Patient) {
+    let query: string = 'insert into patients ('
+    let values = [];
 
-            const resultPatient: QueryResult<Patient> = await pool.query(query, value);
-            return resultPatient.rows[0];
-        } catch (error) {
-            console.log('Error performing medicareLookup: ', error);
-            return undefined;
-        }
-    } else {
-        return undefined;
+    if (currentPatient.firstName !== undefined) {
+        query += 'first_name, '
+        values.push(currentPatient.firstName);
     }
+    if (currentPatient.lastName !== undefined) {
+        query += 'last_name, '
+        values.push(currentPatient.lastName);
+    }
+    if (currentPatient.dateOfBirth !== undefined) {
+        query += 'dob, '
+        values.push(currentPatient.dateOfBirth);
+    }
+    if (currentPatient.gender !== undefined) {
+        query += 'gender, '
+        values.push(currentPatient.gender);
+    }
+    if (currentPatient.address !== undefined) {
+        query += 'address, '
+        values.push(currentPatient.address);
+    }
+    if (currentPatient.mobile !== undefined) {
+        query += 'mobile, '
+        values.push(currentPatient.mobile);
+    }
+    if (currentPatient.email !== undefined) {
+        query += 'email, '
+        values.push(currentPatient.email);
+    }
+    if (currentPatient.medicare !== undefined) {
+        query += 'medicare, '
+        values.push(currentPatient.medicare);
+    }
+    if (currentPatient.ihi !== undefined) {
+        query += 'ihi, '
+        values.push(currentPatient.ihi);
+    }
+
+    // Cut off trailing , 
+    query = query.slice(0, -2);
+    query += ') values (';
+
+    for (let index = 1; index <= values.length; index++) {
+        if (index < values.length) {
+            query += '$' + index + ', ';
+        } else {
+            query += '$' + index.toString() + ')';
+        }
+    }
+
+    await pool.query(query, values);
+
+    console.log(query);
+    console.log(values);
+
 }
 
 run();
