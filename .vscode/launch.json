@@ -16,7 +16,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\sample-tasks\\data-structures\\dataStructures.ts",
+            "program": "${workspaceFolder}\\sample-tasks\\creative-problem-solving\\csvImport.ts",
             "sourceMaps": true,
             "outFiles": [
                 "${workspaceFolder}/**/*.js"

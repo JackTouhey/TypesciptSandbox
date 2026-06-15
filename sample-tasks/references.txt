@@ -31,3 +31,6 @@ https://stackoverflow.com/questions/3476255/in-javascript-how-can-i-tell-if-a-fi
 https://stackoverflow.com/questions/45485073/how-do-i-express-a-date-type-in-typescript
 https://node-postgres.com/features/queries
 https://stackoverflow.com/questions/79940741/using-typescript-how-do-i-strongly-type-postgresql-query-results
+https://stackoverflow.com/questions/12789231/class-type-check-in-typescript
+https://www.typescriptlang.org/docs/handbook/2/typeof-types.html
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
