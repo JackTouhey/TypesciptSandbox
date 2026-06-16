@@ -32,16 +32,9 @@ function parseCsvToPatients(): Patient[] {
 async function run() {
     const patients = parseCsvToPatients();
 
-    if (patients[0] !== undefined && patients[1] !== undefined) {
-        updatePatient(patients[0], patients[1]);
+    for(const patient of patients) {
+        processPatient(patient);
     }
-
-    // for(const patient of patients) {
-    //     // processPatient(patient);
-    //     // Check if already in database
-    //     insertPatient(patient);
-    // }
-
 }
 
 async function processPatient(currentPatient: Patient) {
@@ -61,7 +54,11 @@ async function processPatient(currentPatient: Patient) {
 
 async function lookupPatient(currentPatient: Patient): Promise<Patient | undefined> {
     // Check which identifier to use, try medicare fallback to ihi
-    return currentPatient.medicare !== undefined ? await medicareLookup(currentPatient) : await ihiLookup(currentPatient);
+    if (currentPatient.medicare !== undefined && bigIntHasValue(currentPatient.medicare)) {
+        return await medicareLookup(currentPatient)
+    } else {
+        return await ihiLookup(currentPatient);
+    }
 }
 
 async function medicareLookup(currentPatient: Patient): Promise<Patient | undefined> {
@@ -195,9 +192,10 @@ async function insertPatient(currentPatient: Patient) {
         values.push(currentPatient.email);
     }
     if (currentPatient.medicare !== undefined) {
-        if (bigIntHasValue(currentPatient.medicare))
-        query += 'medicare, '
-        values.push(BigInt(currentPatient.medicare));
+        if (bigIntHasValue(currentPatient.medicare)) {
+            query += 'medicare, '
+            values.push(BigInt(currentPatient.medicare));
+        }
     }
     if (currentPatient.ihi !== undefined) {
         if (bigIntHasValue(currentPatient.ihi)) {
@@ -218,6 +216,9 @@ async function insertPatient(currentPatient: Patient) {
         }
     }
 
+    console.log(query);
+    console.log(values);
+
     await pool.query(query, values);
 }
 
@@ -230,7 +231,7 @@ async function updatePatient(retrievedPatient: Patient, currentPatient: Patient)
         if (retrievedPatient.firstName !== currentPatient.firstName) {
             query += 'first_name = $' + index + ', ';
             index++
-            values.push(retrievedPatient.firstName);
+            values.push(currentPatient.firstName);
         }
     }
 
@@ -238,7 +239,7 @@ async function updatePatient(retrievedPatient: Patient, currentPatient: Patient)
         if (retrievedPatient.lastName !== currentPatient.lastName) {
             query += 'last_name= $' + index + ', ';
             index++
-            values.push(retrievedPatient.lastName);
+            values.push(currentPatient.lastName);
         }
     }
 
@@ -246,7 +247,7 @@ async function updatePatient(retrievedPatient: Patient, currentPatient: Patient)
         if (retrievedPatient.dateOfBirth !== currentPatient.dateOfBirth) {
             query += 'dob = $' + index + ', ';
             index++
-            values.push(retrievedPatient.dateOfBirth);
+            values.push(currentPatient.dateOfBirth);
         }
     }
 
@@ -254,7 +255,7 @@ async function updatePatient(retrievedPatient: Patient, currentPatient: Patient)
         if (retrievedPatient.gender !== currentPatient.gender) {
             query += 'gender = $' + index + ', ';
             index++
-            values.push(retrievedPatient.gender);
+            values.push(currentPatient.gender);
         }
     }
 
@@ -262,7 +263,7 @@ async function updatePatient(retrievedPatient: Patient, currentPatient: Patient)
         if (retrievedPatient.address !== currentPatient.address) {
             query += 'address = $' + index + ', ';
             index++
-            values.push(retrievedPatient.address);
+            values.push(currentPatient.address);
         }
     }
 
@@ -270,7 +271,7 @@ async function updatePatient(retrievedPatient: Patient, currentPatient: Patient)
         if (retrievedPatient.mobile !== currentPatient.mobile) {
             query += 'mobile = $' + index + ', ';
             index++
-            values.push(BigInt(retrievedPatient.mobile));
+            values.push(BigInt(currentPatient.mobile));
         }
     }
 
@@ -278,7 +279,7 @@ async function updatePatient(retrievedPatient: Patient, currentPatient: Patient)
         if (retrievedPatient.email !== currentPatient.email) {
             query += 'email = $' + index + ', ';
             index++
-            values.push(retrievedPatient.email);
+            values.push(currentPatient.email);
         }
     }
 
@@ -286,7 +287,7 @@ async function updatePatient(retrievedPatient: Patient, currentPatient: Patient)
         if (retrievedPatient.medicare !== currentPatient.medicare) {
             query += 'medicare = $' + index + ', ';
             index++
-            values.push(BigInt(retrievedPatient.medicare));
+            values.push(BigInt(currentPatient.medicare));
         }
     }
 
@@ -294,7 +295,7 @@ async function updatePatient(retrievedPatient: Patient, currentPatient: Patient)
         if (retrievedPatient.ihi !== currentPatient.ihi) {
             query += 'ihi = $' + index + ', ';
             index++
-            values.push(BigInt(retrievedPatient.ihi));
+            values.push(BigInt(currentPatient.ihi));
         }
     }
 
