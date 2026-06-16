@@ -36,3 +36,4 @@ https://www.typescriptlang.org/docs/handbook/2/typeof-types.html
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
 https://stackoverflow.com/questions/201183/how-can-i-determine-equality-for-two-javascript-objects
 https://stackoverflow.com/questions/952924/how-do-i-chop-slice-trim-off-last-character-in-string-using-javascript
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt

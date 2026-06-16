@@ -10,10 +10,10 @@ type Patient = {
     dateOfBirth?: Date,
     gender?: string,
     address?: string,
-    mobile?: number,
+    mobile?: bigint,
     email?: string,
-    medicare?: number,
-    ihi?: number
+    medicare?: bigint,
+    ihi?: bigint
 }
 
 function parseCsvToPatients(): Patient[] {
@@ -31,11 +31,6 @@ function parseCsvToPatients(): Patient[] {
 
 async function run() {
     const patients = parseCsvToPatients();
-
-    if (patients[0] !== undefined) {
-        insertPatient(patients[0]);
-        // await medicareLookup(patients[0]);
-    }
 
     for(const patient of patients) {
         // processPatient(patient);
@@ -130,7 +125,7 @@ function buildPatientFromRecord(resultSet: Record<string, unknown> | undefined):
         }
         if (fieldsPresent.includes('mobile')) {
             if (typeof resultSet.mobile === "number") {
-                returnPatient.mobile = resultSet.mobile;
+                returnPatient.mobile = BigInt(resultSet.mobile);
             }
         }
         if (fieldsPresent.includes('email')) {
@@ -139,13 +134,13 @@ function buildPatientFromRecord(resultSet: Record<string, unknown> | undefined):
             }
         }
         if (fieldsPresent.includes('medicare')) {
-            if (typeof resultSet.medicare === "string" || typeof resultSet.medicare === "number") {
-                returnPatient.medicare = Number(resultSet.medicare);
+            if (typeof resultSet.medicare === "string") {
+                returnPatient.medicare = BigInt(resultSet.medicare);
             }
         }
         if (fieldsPresent.includes('ihi')) {
-            if (typeof resultSet.ihi === "string" || typeof resultSet.ihi === "number") {
-                returnPatient.ihi = Number(resultSet.ihi);
+            if (typeof resultSet.ihi === "string") {
+                returnPatient.ihi = BigInt(resultSet.ihi);
             }
         }
 
@@ -156,44 +151,46 @@ function buildPatientFromRecord(resultSet: Record<string, unknown> | undefined):
 }
 
 async function insertPatient(currentPatient: Patient) {
+
     let query: string = 'insert into patients ('
     let values = [];
 
-    if (currentPatient.firstName !== undefined) {
+    if (currentPatient.firstName !== null && currentPatient.firstName !== '') {
         query += 'first_name, '
         values.push(currentPatient.firstName);
     }
-    if (currentPatient.lastName !== undefined) {
+    if (currentPatient.lastName !== null && currentPatient.lastName !== '') {
         query += 'last_name, '
         values.push(currentPatient.lastName);
     }
-    if (currentPatient.dateOfBirth !== undefined) {
+    if (currentPatient.dateOfBirth !== null) {
         query += 'dob, '
         values.push(currentPatient.dateOfBirth);
     }
-    if (currentPatient.gender !== undefined) {
+    if (currentPatient.gender !== null && currentPatient.gender !== '') {
         query += 'gender, '
         values.push(currentPatient.gender);
     }
-    if (currentPatient.address !== undefined) {
+    if (currentPatient.address !== null && currentPatient.address !== '') {
         query += 'address, '
         values.push(currentPatient.address);
     }
-    if (currentPatient.mobile !== undefined) {
+    if (currentPatient.mobile !== null && currentPatient.mobile !== undefined && currentPatient.mobile > 0) {
         query += 'mobile, '
-        values.push(currentPatient.mobile);
+        values.push(BigInt(currentPatient.mobile));
     }
-    if (currentPatient.email !== undefined) {
+    if (currentPatient.email !== null && currentPatient.email !== '') {
         query += 'email, '
         values.push(currentPatient.email);
     }
-    if (currentPatient.medicare !== undefined) {
+    if (currentPatient.medicare !== null && currentPatient.medicare !== undefined && currentPatient.medicare > 0) {
         query += 'medicare, '
-        values.push(currentPatient.medicare);
+        values.push(BigInt(currentPatient.medicare));
     }
-    if (currentPatient.ihi !== undefined) {
+    // I wasn't able to get the check here or on the other numbers to skip over blank fields
+    if (currentPatient.ihi !== null && currentPatient.ihi !== undefined && currentPatient.ihi > 0) {
         query += 'ihi, '
-        values.push(currentPatient.ihi);
+        values.push(BigInt(currentPatient.ihi));
     }
 
     // Cut off trailing , 
