@@ -32,11 +32,15 @@ function parseCsvToPatients(): Patient[] {
 async function run() {
     const patients = parseCsvToPatients();
 
-    for(const patient of patients) {
-        // processPatient(patient);
-        // Check if already in database
-        insertPatient(patient);
+    if (patients[0] !== undefined && patients[1] !== undefined) {
+        updatePatient(patients[0], patients[1]);
     }
+
+    // for(const patient of patients) {
+    //     // processPatient(patient);
+    //     // Check if already in database
+    //     insertPatient(patient);
+    // }
 
 }
 
@@ -47,10 +51,11 @@ async function processPatient(currentPatient: Patient) {
         // check if any difference
         if (!_.isEqual(currentPatient, retrievedPatient)) {
             // If not equal update
+            updatePatient(retrievedPatient, currentPatient);
         }
     } else {
         // No patient retrieved, insert whole patient
-
+        insertPatient(currentPatient);
     }
 }
 
@@ -150,6 +155,10 @@ function buildPatientFromRecord(resultSet: Record<string, unknown> | undefined):
     }
 }
 
+function bigIntHasValue(bigIntToCheck: bigint): boolean {
+    return bigIntToCheck !== null && bigIntToCheck > 0;
+}
+
 async function insertPatient(currentPatient: Patient) {
 
     let query: string = 'insert into patients ('
@@ -163,7 +172,7 @@ async function insertPatient(currentPatient: Patient) {
         query += 'last_name, '
         values.push(currentPatient.lastName);
     }
-    if (currentPatient.dateOfBirth !== null) {
+    if (currentPatient.dateOfBirth !== null && currentPatient.dateOfBirth !== undefined) {
         query += 'dob, '
         values.push(currentPatient.dateOfBirth);
     }
@@ -175,22 +184,26 @@ async function insertPatient(currentPatient: Patient) {
         query += 'address, '
         values.push(currentPatient.address);
     }
-    if (currentPatient.mobile !== null && currentPatient.mobile !== undefined && currentPatient.mobile > 0) {
-        query += 'mobile, '
-        values.push(BigInt(currentPatient.mobile));
+    if (currentPatient.mobile !== undefined) {
+        if(bigIntHasValue(currentPatient.mobile)) {
+            query += 'mobile, '
+            values.push(BigInt(currentPatient.mobile));
+        }
     }
     if (currentPatient.email !== null && currentPatient.email !== '') {
         query += 'email, '
         values.push(currentPatient.email);
     }
-    if (currentPatient.medicare !== null && currentPatient.medicare !== undefined && currentPatient.medicare > 0) {
+    if (currentPatient.medicare !== undefined) {
+        if (bigIntHasValue(currentPatient.medicare))
         query += 'medicare, '
         values.push(BigInt(currentPatient.medicare));
     }
-    // I wasn't able to get the check here or on the other numbers to skip over blank fields
-    if (currentPatient.ihi !== null && currentPatient.ihi !== undefined && currentPatient.ihi > 0) {
-        query += 'ihi, '
-        values.push(BigInt(currentPatient.ihi));
+    if (currentPatient.ihi !== undefined) {
+        if (bigIntHasValue(currentPatient.ihi)) {
+            query += 'ihi, '
+            values.push(BigInt(currentPatient.ihi));
+        }
     }
 
     // Cut off trailing , 
@@ -206,10 +219,105 @@ async function insertPatient(currentPatient: Patient) {
     }
 
     await pool.query(query, values);
+}
+
+async function updatePatient(retrievedPatient: Patient, currentPatient: Patient) {
+    let query: string = 'update patients set ';
+    let values = [];
+    let index = 1;
+
+    if (retrievedPatient.firstName !== undefined && currentPatient.firstName !== undefined) {
+        if (retrievedPatient.firstName !== currentPatient.firstName) {
+            query += 'first_name = $' + index + ', ';
+            index++
+            values.push(retrievedPatient.firstName);
+        }
+    }
+
+    if (retrievedPatient.lastName !== undefined && currentPatient.lastName !== undefined) {
+        if (retrievedPatient.lastName !== currentPatient.lastName) {
+            query += 'last_name= $' + index + ', ';
+            index++
+            values.push(retrievedPatient.lastName);
+        }
+    }
+
+    if (retrievedPatient.dateOfBirth !== undefined && currentPatient.dateOfBirth !== undefined) {
+        if (retrievedPatient.dateOfBirth !== currentPatient.dateOfBirth) {
+            query += 'dob = $' + index + ', ';
+            index++
+            values.push(retrievedPatient.dateOfBirth);
+        }
+    }
+
+    if (retrievedPatient.gender !== undefined && currentPatient.gender !== undefined) {
+        if (retrievedPatient.gender !== currentPatient.gender) {
+            query += 'gender = $' + index + ', ';
+            index++
+            values.push(retrievedPatient.gender);
+        }
+    }
+
+    if (retrievedPatient.address !== undefined && currentPatient.address !== undefined) {
+        if (retrievedPatient.address !== currentPatient.address) {
+            query += 'address = $' + index + ', ';
+            index++
+            values.push(retrievedPatient.address);
+        }
+    }
+
+    if (retrievedPatient.mobile !== undefined && currentPatient.mobile !== undefined) {
+        if (retrievedPatient.mobile !== currentPatient.mobile) {
+            query += 'mobile = $' + index + ', ';
+            index++
+            values.push(BigInt(retrievedPatient.mobile));
+        }
+    }
+
+    if (retrievedPatient.email !== undefined && currentPatient.email !== undefined) {
+        if (retrievedPatient.email !== currentPatient.email) {
+            query += 'email = $' + index + ', ';
+            index++
+            values.push(retrievedPatient.email);
+        }
+    }
+
+    if (retrievedPatient.medicare !== undefined && currentPatient.medicare !== undefined) {
+        if (retrievedPatient.medicare !== currentPatient.medicare) {
+            query += 'medicare = $' + index + ', ';
+            index++
+            values.push(BigInt(retrievedPatient.medicare));
+        }
+    }
+
+    if (retrievedPatient.ihi !== undefined && currentPatient.ihi !== undefined) {
+        if (retrievedPatient.ihi !== currentPatient.ihi) {
+            query += 'ihi = $' + index + ', ';
+            index++
+            values.push(BigInt(retrievedPatient.ihi));
+        }
+    }
+
+    let hasMedicare: boolean = false;
+    
+    if (currentPatient.medicare !== undefined) {
+        hasMedicare = bigIntHasValue(currentPatient.medicare);
+    }
+
+    query = query.slice(0, -2);
+    query += ' where ';
+    query += hasMedicare ? 'medicare = $' + index : 'ihi = $' + index;
+    
+    if (hasMedicare) {
+        values.push(currentPatient.medicare);
+    } else {
+        values.push(currentPatient.ihi);
+    }
 
     console.log(query);
     console.log(values);
 
+    await pool.query(query, values);
 }
 
 run();
