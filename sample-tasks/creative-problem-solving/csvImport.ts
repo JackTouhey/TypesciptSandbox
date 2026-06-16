@@ -42,6 +42,7 @@ async function processPatient(currentPatient: Patient) {
     const retrievedPatient = await lookupPatient(currentPatient);
     if (retrievedPatient !== undefined) {
         // check if any difference
+        // I believe there's an issue with this check as Date objects and the number fields of the two patients are slightly different which cause this to always be true
         if (!_.isEqual(currentPatient, retrievedPatient)) {
             // If not equal update
             updatePatient(retrievedPatient, currentPatient);
