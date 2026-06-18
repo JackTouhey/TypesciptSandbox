@@ -1,0 +1,18 @@
+START
+    SET csvFile = csvFilePath
+    SET csvContents = READ csvFile
+    SET patientsFromCsv = empty array
+
+    FOR EACH line IN csvContents  
+        SET currentPatient = empty object
+        SET patientData = array of values from splitting line on ,
+
+        FOR EACH value IN patientData  
+            IF value is a valid patient property THEN
+                Add the value as a field to currentPatient
+        END LOOP
+
+        Add currentPatient to patientsFromCsv
+    END LOOP
+
+    
