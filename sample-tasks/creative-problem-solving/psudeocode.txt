@@ -25,7 +25,7 @@ START
             SET patientsMatch = CALL doPatientsMatch(patient, databasePatient)
 
             IF patientsMatch is false THEN
-                CALL updatePatient
+                CALL updatePatient(patient, databasePatient)
             END IF
         END IF
     END LOOP
@@ -43,19 +43,58 @@ START
 
     FUNCTION insertPatient(patient)
         SET query = "INSERT INTO patients ("
-        INITIALIZE values AS empty array
+        INITIALIZE patientValues AS empty array
 
         FOR EACH field OF patient
             IF field has a value THEN
                 Append the fields name to query
-                Add the fields value to values
+                Add the fields value to patientValues
             END IF
         END LOOP
 
-        EXECUTE query, values ON dbConnection
+        query += ") VALUES ("
+
+        FOR EACH value OF patientValues   
+            Append value to query
+        END LOOP
+
+        query += ")"
+
+        EXECUTE query ON dbConnection
     END FUNCTION
 
-    
+    FUNCTION doPatientsMatch(csvPatient, databasePatient)
+        FOR EACH field OF csvPatient
+            IF field does not match same field of databasePatient THEN
+                RETURN false
+            END IF
+        END LOOP
+
+        RETURN true
+    END FUNCTION
+
+    FUNCTION updatePatient(csvPatient, databasePatient)
+        SET query = "UPDATE patients SET "
+
+        FOR EACH field OF csvPatient
+            IF field does not match same field of databasePatient THEN
+                query += "fieldName = field"
+            END IF
+        END LOOP
+
+        IF databasePatient has medicare number THEN
+            query += "WHERE medicare = databasePatient.medicare"
+        ELSE
+            query += "WHERE ihi = databasePatient.ihi"
+        END IF
+
+        EXECUTE query ON dbConnection
+    END FUNCTION
+
+    CLOSE dbConnection
+END
+
+
         
 
 
