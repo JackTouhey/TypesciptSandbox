@@ -6,7 +6,7 @@ START
 
     FOR EACH line IN csvContents  
         SET currentPatient = empty object
-        SET patientData = array of values from splitting line on ,
+        SET patientData = array of values from splitting line on ','
 
         FOR EACH value IN patientData  
             IF value is a valid patient property THEN
@@ -40,6 +40,22 @@ START
 
         RETURN EXECUTE query ON dbConnection
     END FUNCTION
-        
+
+    FUNCTION insertPatient(patient)
+        SET query = "INSERT INTO patients ("
+        INITIALIZE values AS empty array
+
+        FOR EACH field OF patient
+            IF field has a value THEN
+                Append the fields name to query
+                Add the fields value to values
+            END IF
+        END LOOP
+
+        EXECUTE query, values ON dbConnection
+    END FUNCTION
+
     
+        
+
 
