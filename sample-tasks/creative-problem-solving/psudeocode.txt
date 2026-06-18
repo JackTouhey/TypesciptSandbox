@@ -2,6 +2,7 @@ START
     SET csvFile = csvFilePath
     SET csvContents = READ csvFile
     SET patientsFromCsv = empty array
+    INITIALIZE dbConnection
 
     FOR EACH line IN csvContents  
         SET currentPatient = empty object
@@ -15,4 +16,30 @@ START
         Add currentPatient to patientsFromCsv
     END LOOP
 
+    FOR EACH patient IN patientsFromCsv
+        SET databasePatient = CALL retrievePatientFromDatabase(patient)
+
+        IF databasePatient is empty THEN
+            CALL insertPatient(patient)
+        ELSE
+            SET patientsMatch = CALL doPatientsMatch(patient, databasePatient)
+
+            IF patientsMatch is false THEN
+                CALL updatePatient
+            END IF
+        END IF
+    END LOOP
+
+    FUNCTION retrievePatientFromDatabase(patient) 
+        INITIALIZE query
+        IF patient has medicare number THEN
+            query = "SELECT first_name, last_name, dob, gender, address, mobile, email, medicare, ihi FROM patients WHERE medicare = patient.medicare"
+        ELSE
+            query = "SELECT first_name, last_name, dob, gender, address, mobile, email, medicare, ihi FROM patients WHERE ihi = patient.ihi"
+        END IF
+
+        RETURN EXECUTE query ON dbConnection
+    END FUNCTION
+        
     
+
