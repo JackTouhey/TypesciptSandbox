@@ -1,8 +1,8 @@
 START
+    INITIALIZE dbConnection
     SET csvFile = csvFilePath
     SET csvContents = READ csvFile
-    SET patientsFromCsv = empty array
-    INITIALIZE dbConnection
+    SET patientsFromCsv = []
 
     FOR EACH line IN csvContents  
         SET currentPatient = empty object
@@ -11,9 +11,10 @@ START
         FOR EACH value IN patientData  
             IF value is a valid patient property THEN
                 Add the value as a field to currentPatient
+            END IF
         END LOOP
 
-        Add currentPatient to patientsFromCsv
+        ADD currentPatient TO patientsFromCsv
     END LOOP
 
     FOR EACH patient IN patientsFromCsv
@@ -22,20 +23,21 @@ START
         IF databasePatient is empty THEN
             CALL insertPatient(patient)
         ELSE
-            SET patientsMatch = CALL doPatientsMatch(patient, databasePatient)
+            SET doPatientsMatch = CALL doPatientsMatch(patient, databasePatient)
 
             IF patientsMatch is false THEN
                 CALL updatePatient(patient, databasePatient)
             END IF
         END IF
+
     END LOOP
 
     FUNCTION retrievePatientFromDatabase(patient) 
-        INITIALIZE query
+        SET query = "SELECT first_name, last_name, dob, gender, address, mobile, email, medicare, ihi FROM patients WHERE"
         IF patient has medicare number THEN
-            query = "SELECT first_name, last_name, dob, gender, address, mobile, email, medicare, ihi FROM patients WHERE medicare = patient.medicare"
+            query += "medicare = patient.medicare"
         ELSE
-            query = "SELECT first_name, last_name, dob, gender, address, mobile, email, medicare, ihi FROM patients WHERE ihi = patient.ihi"
+            query += "ihi = patient.ihi"
         END IF
 
         RETURN EXECUTE query ON dbConnection
@@ -43,7 +45,7 @@ START
 
     FUNCTION insertPatient(patient)
         SET query = "INSERT INTO patients ("
-        INITIALIZE patientValues AS empty array
+        SET patientValues = []
 
         FOR EACH field OF patient
             IF field has a value THEN
