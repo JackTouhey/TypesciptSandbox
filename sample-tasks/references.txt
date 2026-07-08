@@ -37,3 +37,5 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
 https://stackoverflow.com/questions/201183/how-can-i-determine-equality-for-two-javascript-objects
 https://stackoverflow.com/questions/952924/how-do-i-chop-slice-trim-off-last-character-in-string-using-javascript
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt
+https://stackoverflow.com/questions/62923107/date-type-displaying-with-timezone-on-node-postgres-module
+https://stackoverflow.com/questions/20712291/use-node-postgres-to-get-postgres-timestamp-without-timezone-in-utc

@@ -1,8 +1,11 @@
 import { parse } from 'csv-parse/sync';
 import * as fs from 'fs';
 import pool from '../utils/getConnectionPool.ts';
-import type { QueryResult } from 'pg';
+import type { QueryResult, types } from 'pg';
 import _ from 'lodash';
+import pg from 'pg';
+
+pg.types.setTypeParser(1114, (stringValue) => stringValue);
 
 type Patient = {
     firstName?: string,
@@ -21,8 +24,6 @@ function parseCsvToPatients(): Patient[] {
     const headers = ['firstName', 'lastName', 'dateOfBirth', 'gender', 'address', 'mobile', 'email', 'medicare', 'ihi'];
     const fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' });
 
-    let patientArray: Patient[] = [];
-
     return parse(fileContents, {
         delimiter: ',',
         columns: headers,
@@ -30,11 +31,29 @@ function parseCsvToPatients(): Patient[] {
 }
 
 async function run() {
-    const patients = parseCsvToPatients();
+    let patients = parseCsvToPatients();
 
-    for(const patient of patients) {
+    for(let patient of patients) {
+        patient = parsePatientFields(patient);
         processPatient(patient);
     }
+}
+
+function parsePatientFields(patient: Patient): Patient {
+    if (patient.dateOfBirth !== undefined) {
+        const datePart = patient.dateOfBirth.toString().split(' ')[0];
+        patient.dateOfBirth = new Date(datePart + 'T00:00:00.000Z');
+    }
+    if (patient.mobile !== undefined) {
+        patient.mobile = BigInt(patient.mobile.toString());
+    }
+    if (patient.medicare !== undefined) {
+        patient.medicare = BigInt(patient.medicare.toString());
+    }
+    if (patient.ihi !== undefined) {
+        patient.ihi = BigInt(patient.ihi.toString());
+    }
+    return patient;
 }
 
 async function processPatient(currentPatient: Patient) {
@@ -112,8 +131,9 @@ function buildPatientFromRecord(resultSet: Record<string, unknown> | undefined):
             }
         }
         if (fieldsPresent.includes('dateofbirth')) {
-            if (resultSet.dateofbirth instanceof Date) {
-                returnPatient.dateOfBirth = resultSet.dateofbirth;
+            if (typeof resultSet.dateofbirth === "string") {
+                const datePart = resultSet.dateofbirth.split(' ')[0]; // strip any time portion, keep 'YYYY-MM-DD'
+                returnPatient.dateOfBirth = new Date(datePart + 'T00:00:00.000Z'); // force UTC parse
             }
         }
         if (fieldsPresent.includes('gender')) {
@@ -245,7 +265,7 @@ async function updatePatient(retrievedPatient: Patient, currentPatient: Patient)
     }
 
     if (retrievedPatient.dateOfBirth !== undefined && currentPatient.dateOfBirth !== undefined) {
-        if (retrievedPatient.dateOfBirth !== currentPatient.dateOfBirth) {
+        if (retrievedPatient.dateOfBirth.getTime() !== currentPatient.dateOfBirth.getTime()) {
             query += 'dob = $' + index + ', ';
             index++
             values.push(currentPatient.dateOfBirth);

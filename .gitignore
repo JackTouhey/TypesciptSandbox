@@ -143,3 +143,4 @@ vite.config.ts.timestamp-*
 .vite/
 
 sample-tasks/support_reply.txt
+config.env
