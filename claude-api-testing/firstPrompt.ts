@@ -13,6 +13,22 @@ const client = new Anthropic();
 const fileToUpload: string = process.env.UPLOAD_PATH !== undefined ? process.env.UPLOAD_PATH : "";
 const cvFileId = process.env.CV_FILEID !== undefined ? process.env.CV_FILEID : "";
 const messages: Message[] = [];
+const fileIds: string[] = [
+    process.env.CL1 !== undefined ? process.env.CL1 : "",
+    process.env.CL2 !== undefined ? process.env.CL2 : "",
+    process.env.CL3 !== undefined ? process.env.CL3 : "", 
+    process.env.CL4 !== undefined ? process.env.CL4 : "",
+    process.env.CL5 !== undefined ? process.env.CL5 : "",
+    process.env.CL6 !== undefined ? process.env.CL6 : "",
+    process.env.CL7 !== undefined ? process.env.CL7 : "",
+    process.env.CL8 !== undefined ? process.env.CL8 : "",
+    process.env.CL9 !== undefined ? process.env.CL9 : "",
+    process.env.CL10 !== undefined ? process.env.CL10 : "",
+    process.env.CL11 !== undefined ? process.env.CL11 : "",
+    process.env.CL12 !== undefined ? process.env.CL12 : "",
+    process.env.CL13 !== undefined ? process.env.CL13 : "",
+    process.env.CL14 !== undefined ? process.env.CL14 : ""
+    ]
 
 async function submitPrompt(messages: Message[]) {
     const response = await client.beta.messages.create({
@@ -56,13 +72,14 @@ async function uploadFile(filePath: string): Promise<string> {
 
 
 async function run() {
-    // const fileId = await uploadFile(fileToUpload);
-    // console.log(fileId);
-    // console.log("------------------------------------")
-    const textContent = "Read me the contents of the file with the fileId in the container_upload"; 
+    const textContent = "List the title of each file you can access from the provided fileId"; 
     const message: Message = createMessage(true, [{ type: "text", text: textContent }]);
-    addFileToMessage(message, cvFileId);
     messages.push(message);
+
+    fileIds.forEach((fileId: string) => {
+        addFileToMessage(message, fileId)
+    });
+
     submitPrompt(messages);
 }
 
