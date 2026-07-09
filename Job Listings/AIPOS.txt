@@ -1,0 +1,73 @@
+AIPOS Pty Ltd is a Brisbane-based technology company specialising in the development, implementation and support of Point-of-Sale (POS) systems and integrated business software solutions for small and medium-sized businesses across Australia.
+
+Our solutions are widely used by restaurants, cafés, retail stores and hospitality businesses, helping clients improve operational efficiency through customised POS software, payment integration, inventory management and business automation.
+
+As our business continues to grow, we are seeking a skilled Developer Programmer to join our software development team.
+
+The role
+
+This is a full-time position responsible for the development, enhancement, integration and ongoing support of our POS software platform and related business applications.
+
+Key responsibilities
+
+• Analyse business requirements, functional specifications and technical designs for software development projects
+
+• Design, develop, test and maintain Point-of-Sale (POS) software applications and related business systems
+
+• Write, modify and maintain application code in accordance with system requirements, technical specifications and coding standards
+
+• Develop web-based and mobile applications to support retail and hospitality business operations
+
+• Integrate payment gateways, EFTPOS systems and third-party APIs with existing software platforms
+
+• Identify technology limitations, diagnose software issues and implement effective solutions to improve system performance and reliability
+
+• Perform software testing, debugging and troubleshooting to ensure applications meet quality and functional requirements
+
+• Develop and maintain databases, system interfaces and software integrations
+
+• Prepare and maintain technical documentation, user documentation and operational procedures
+
+• Participate in software design discussions and recommend system enhancements, software upgrades and technology improvements
+
+• Support software deployment, implementation and ongoing maintenance for client systems
+
+About you
+
+To be successful in this role, you will have:
+
+• A Bachelor's degree or higher in Computer Science, Software Engineering, Information Technology or a related discipline
+
+• At least one year of experience in software development, application programming or a related role
+
+• Strong experience in software application development using modern programming languages
+
+• Experience with SQL databases, APIs, web services and system integration
+
+• Experience developing commercial software applications
+
+• Experience with POS systems, payment integration or retail technology will be highly regarded
+
+• Strong analytical, troubleshooting and problem-solving skills
+
+• Excellent communication skills and the ability to work both independently and collaboratively
+
+What we offer
+
+• Full-time permanent position
+
+• Annual salary of $75,000 – $85,000, depending on qualifications and experience
+
+• Opportunity to work on commercial POS software solutions used by businesses across Australia
+
+• Exposure to end-to-end software development, including system analysis, coding, testing, deployment and ongoing product enhancement
+
+• A supportive and collaborative working environment with opportunities for professional growth
+
+How to apply
+
+If you are interested in this opportunity, please submit your resume together with a brief cover letter outlining your relevant experience.
+
+Only shortlisted applicants will be contacted.
+
+Applicants must have full working rights in Australia.

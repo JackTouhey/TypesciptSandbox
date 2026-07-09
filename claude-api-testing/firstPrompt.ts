@@ -10,10 +10,11 @@ type Message = {
 } 
 
 const client = new Anthropic();
-const fileToUpload: string = process.env.UPLOAD_PATH !== undefined ? process.env.UPLOAD_PATH : "";
-const cvFileId = process.env.CV_FILEID !== undefined ? process.env.CV_FILEID : "";
+const uploadPath: string = process.env.UPLOAD_PATH !== undefined ? process.env.UPLOAD_PATH : "";
+const downloadPath = process.env.DOWNLOAD_PATH !== undefined ? process.env.DOWNLOAD_PATH : "";
 const messages: Message[] = [];
 const fileIds: string[] = [
+    process.env.CV_FILEID !== undefined ? process.env.CV_FILEID : "",
     process.env.CL1 !== undefined ? process.env.CL1 : "",
     process.env.CL2 !== undefined ? process.env.CL2 : "",
     process.env.CL3 !== undefined ? process.env.CL3 : "", 
@@ -28,7 +29,8 @@ const fileIds: string[] = [
     process.env.CL12 !== undefined ? process.env.CL12 : "",
     process.env.CL13 !== undefined ? process.env.CL13 : "",
     process.env.CL14 !== undefined ? process.env.CL14 : ""
-    ]
+]
+
 
 async function submitPrompt(messages: Message[]) {
     const response = await client.beta.messages.create({
@@ -68,20 +70,27 @@ async function uploadFile(filePath: string): Promise<string> {
     return uploadedFile.id !== undefined ? uploadedFile.id : "id was not string :("; 
 }
 
-
+async function downloadFile(fileId: string) {
+    const response = await client.beta.files.download(fileId);
+    const buffer = Buffer.from(await response.arrayBuffer());
+    fs.writeFileSync(downloadPath + "/" + fileId, buffer);
+}
 
 
 async function run() {
-    const textContent = "List the title of each file you can access from the provided fileId"; 
+    const textContent = "The fileIds attached are cover letters and a cv. Use this to learn my writing style and write a cover letter for the job listing to a docx file"; 
     const message: Message = createMessage(true, [{ type: "text", text: textContent }]);
-    messages.push(message);
 
     fileIds.forEach((fileId: string) => {
-        addFileToMessage(message, fileId)
+        addFileToMessage(message, fileId);
     });
+    addFileToMessage(message, await uploadFile(uploadPath));
 
-    submitPrompt(messages);
+    messages.push(message);
+    const response = submitPrompt(messages);
+
+    
 }
 
-run()
-
+run();
+// downloadFile();
