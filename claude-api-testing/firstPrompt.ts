@@ -15,7 +15,6 @@ const downloadPath = process.env.DOWNLOAD_PATH !== undefined ? process.env.DOWNL
 const messages: Message[] = [];
 const fileIds: string[] = [
     process.env.CV_FILEID !== undefined ? process.env.CV_FILEID : "",
-    process.env.JOB_DESCRIPTION_ID !== undefined ? process.env.JOB_DESCRIPTION_ID : "",
     process.env.CL1 !== undefined ? process.env.CL1 : "",
     process.env.CL2 !== undefined ? process.env.CL2 : "",
     process.env.CL3 !== undefined ? process.env.CL3 : "", 
@@ -42,8 +41,8 @@ async function submitPrompt(messages: Message[]) {
         messages: messages
     });
 
-    console.log(response);
-    console.log('------------------------------');
+    // console.log(response);
+    // console.log('------------------------------');
 
     for (const block of response.content) {
         if (block.type === 'bash_code_execution_tool_result') {
@@ -81,25 +80,26 @@ async function uploadFile(filePath: string): Promise<string> {
     const uploadedFile = await client.beta.files.upload({
         file: fs.createReadStream(filePath)
     });
-    console.log(uploadedFile);
     return uploadedFile.id !== undefined ? uploadedFile.id : "id was not string :("; 
 }
 
 async function downloadFile(fileId: string) {
     const response = await client.beta.files.download(fileId);
     const buffer = Buffer.from(await response.arrayBuffer());
-    fs.writeFileSync(downloadPath + "/" + fileId, buffer);
+    fs.writeFileSync(downloadPath + "/" + fileId + ".docx", buffer);
+    console.log('Downloaded file: ' + downloadPath + "/" + fileId + ".docx");
 }
 
 
 async function run() {
-    const textContent = "The fileIds attached are cover letters and a cv. Use this to learn my writing style and write a cover letter for the job listing to a docx file"; 
+    const textContent = "The fileIds attached are cover letters and a cv. Use this to learn my writing style and write a cover letter for the job listing to a docx file." + 
+            "Recreate the formatting of the cover letters with a blue bar down the left."; 
     const message: Message = createMessage(true, [{ type: "text", text: textContent }]);
 
     fileIds.forEach((fileId: string) => {
         addFileToMessage(message, fileId);
     });
-    // addFileToMessage(message, await uploadFile(uploadPath));
+    addFileToMessage(message, await uploadFile(uploadPath));
 
     messages.push(message);
     const generatedFileId = await submitPrompt(messages);
@@ -110,4 +110,3 @@ async function run() {
 }
 
 run();
-// downloadFile();
