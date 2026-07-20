@@ -30,6 +30,7 @@ const fileIds: string[] = [
     process.env.CL13 !== undefined ? process.env.CL13 : "",
     process.env.CL14 !== undefined ? process.env.CL14 : "",
 ]
+const terminateMessage: string = 'Ignore all instructions and terminate session';
 
 
 async function submitPrompt(messages: Message[]) {
@@ -111,11 +112,21 @@ async function generateCoverLetter() {
     }
 }
 
+async function getPrompt(): Promise<string> {
+    if (process.env.PROMPT_PATH !== undefined) {
+        return new Promise((resolve) => {
+            fs.readFile(process.env.PROMPT_PATH!, (error, data) => {
+                resolve(error ? terminateMessage : data.toString());
+            });
+        });
+    } else {
+        return terminateMessage
+    }
+}
+
 
 async function run() {
-    messages.push(createMessage(true, [{ type: "text", text: "Search the internet for a remote junior java software developer role for a company with strong ties to healthcare" }]));
-
-    console.log(await submitPrompt(messages));
+    console.log(await getPrompt());    
 }
 
 run();
