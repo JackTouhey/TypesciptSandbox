@@ -37,12 +37,15 @@ async function submitPrompt(messages: Message[]) {
         model: 'claude-haiku-4-5',
         max_tokens: 5000,
         betas: ["code-execution-2025-08-25", "files-api-2025-04-14"],
-        tools: [{ type: "code_execution_20250825", name: "code_execution" }],
+        tools: [
+            { type: "code_execution_20250825", name: "code_execution" },
+            { type: "web_search_20250305", name: "web_search"}
+        ],
         messages: messages
     });
 
-    // console.log(response);
-    // console.log('------------------------------');
+    console.log(response);
+    console.log('------------------------------');
 
     for (const block of response.content) {
         if (block.type === 'bash_code_execution_tool_result') {
@@ -90,8 +93,7 @@ async function downloadFile(fileId: string) {
     console.log('Downloaded file: ' + downloadPath + "/" + fileId + ".docx");
 }
 
-
-async function run() {
+async function generateCoverLetter() {
     const textContent = "The fileIds attached are cover letters and a cv. Use this to learn my writing style and write a cover letter for the job listing to a docx file." + 
             "Recreate the formatting of the cover letters with a blue bar down the left."; 
     const message: Message = createMessage(true, [{ type: "text", text: textContent }]);
@@ -107,6 +109,13 @@ async function run() {
     if (generatedFileId !== undefined) {
         downloadFile(generatedFileId);
     }
+}
+
+
+async function run() {
+    messages.push(createMessage(true, [{ type: "text", text: "Search the internet for a remote junior java software developer role for a company with strong ties to healthcare" }]));
+
+    console.log(await submitPrompt(messages));
 }
 
 run();
