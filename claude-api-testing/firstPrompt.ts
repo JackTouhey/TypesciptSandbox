@@ -54,8 +54,9 @@ async function submitPrompt(messages: Message[]) {
             if (codeExecutionContent.type === 'bash_code_execution_result') {
                 for (const generatedFile of codeExecutionContent.content) {
                     const fileId = generatedFile.file_id;
-                    console.log("extracted fileId: " + fileId);
-                    return fileId;
+                    if (fileId !== undefined) {
+                        downloadFile(fileId);
+                    }
                 }
             }
         }
@@ -95,21 +96,16 @@ async function downloadFile(fileId: string) {
 }
 
 async function generateCoverLetter() {
-    const textContent = "The fileIds attached are cover letters and a cv. Use this to learn my writing style and write a cover letter for the job listing to a docx file." + 
-            "Recreate the formatting of the cover letters with a blue bar down the left."; 
-    const message: Message = createMessage(true, [{ type: "text", text: textContent }]);
+    const promptContent = await getPrompt();
+    const message: Message = createMessage(true, [{ type: "text", text: promptContent }]);
 
     fileIds.forEach((fileId: string) => {
         addFileToMessage(message, fileId);
     });
-    addFileToMessage(message, await uploadFile(uploadPath));
+    // addFileToMessage(message, await uploadFile(uploadPath));
 
     messages.push(message);
-    const generatedFileId = await submitPrompt(messages);
-
-    if (generatedFileId !== undefined) {
-        downloadFile(generatedFileId);
-    }
+    await submitPrompt(messages);
 }
 
 async function getPrompt(): Promise<string> {
@@ -126,7 +122,7 @@ async function getPrompt(): Promise<string> {
 
 
 async function run() {
-    console.log(await getPrompt());    
+    generateCoverLetter();
 }
 
 run();
